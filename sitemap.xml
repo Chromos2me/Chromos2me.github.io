@@ -74,6 +74,13 @@
 
   
   <url>
+    <loc>http://chromos2me.github.io/tags/DFIR/</loc>
+    <lastmod>2025-01-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://chromos2me.github.io/tags/Forensics/</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
@@ -81,6 +88,13 @@
   </url>
   
 
+  
+  <url>
+    <loc>http://chromos2me.github.io/categories/HTB/</loc>
+    <lastmod>2025-01-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
   <url>
     <loc>http://chromos2me.github.io/categories/WriteUp/</loc>
