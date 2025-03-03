@@ -85,7 +85,7 @@
 
   <url>
     <loc>http://chromos2me.github.io/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -93,21 +93,21 @@
   
   <url>
     <loc>http://chromos2me.github.io/tags/Forensics/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://chromos2me.github.io/tags/DFIR/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://chromos2me.github.io/tags/Pentest-Active-Directory-Relay-Attack-RBCD-Attack-Potato-Bloodhound-Roasting-Crypto-Spray-Shadow-Credentials-Enumerate/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -116,14 +116,14 @@
   
   <url>
     <loc>http://chromos2me.github.io/categories/WriteUp/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://chromos2me.github.io/categories/HTB/</loc>
-    <lastmod>2025-03-02</lastmod>
+    <lastmod>2025-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
