@@ -160,34 +160,26 @@
     <div class="divider"></div>
 
     <div class="content">
-        <p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250122170353.png" alt="微信截图_20250122170353"></p>
-<h2 id="sherlock-scenario"><a class="markdownIt-Anchor" href="#sherlock-scenario"></a> Sherlock Scenario</h2>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forela&#x27;s domain controller is under attack. The Domain Administrator account is believed to be compromised, and it is suspected that the threat actor dumped the NTDS.dit database on the DC. We just received an alert of vssadmin being used on the DC, since this is not part of the routine schedule we have good reason to believe that the attacker abused this LOLBIN utility to get the Domain environment&#x27;s crown jewel. Perform some analysis on provided artifacts for a quick triage and if possible kick the attacker as early as possible.</span><br></pre></td></tr></table></figure>
-<h2 id="tasks"><a class="markdownIt-Anchor" href="#tasks"></a> Tasks</h2>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> Attackers can abuse the vssadmin utility to create volume shadow snapshots and then extract sensitive files like NTDS.dit to bypass security mechanisms. Identify the time when the Volume Shadow Copy service entered a running state.</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> When a volume shadow snapshot is created, the Volume shadow copy service validates the privileges using the Machine account and enumerates User groups. Find the two user groups the volume shadow copy process queries and the machine account that did it.</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> Identify the Process ID (in Decimal) of the volume shadow copy service process.</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> Find the assigned Volume ID/GUID value to the Shadow copy snapshot when it was mounted.</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> Identify the full path of the dumped NTDS database on disk.</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> When was newly dumped ntds.dit created on disk?</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> A registry hive was also dumped alongside the NTDS database. Which registry hive was dumped and what is its file size in bytes?</span><br></pre></td></tr></table></figure>
-<h2 id="analysis"><a class="markdownIt-Anchor" href="#analysis"></a> Analysis</h2>
-<p>题目给了evtx文件和MFT文件，我们先来对这两个文件进行简要的解释</p>
-<h3 id="evtx"><a class="markdownIt-Anchor" href="#evtx"></a> evtx</h3>
-<p><code>.evtx</code> 文件是 Windows 操作系统的 <strong>事件日志文件格式</strong>，它用于存储系统、应用程序、安全相关的事件日志。Windows NT 和 Windows 2000 之前的版本的文件格式为<code>.evt</code>。</p>
+        <p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250122170353.png" alt="微信截图_20250122170353"></p>
+<h2 id="Sherlock-Scenario"><a href="#Sherlock-Scenario" class="headerlink" title="Sherlock Scenario"></a>Sherlock Scenario</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forela&#x27;s domain controller is under attack. The Domain Administrator account is believed to be compromised, and it is suspected that the threat actor dumped the NTDS.dit database on the DC. We just received an alert of vssadmin being used on the DC, since this is not part of the routine schedule we have good reason to believe that the attacker abused this LOLBIN utility to get the Domain environment&#x27;s crown jewel. Perform some analysis on provided artifacts for a quick triage and if possible kick the attacker as early as possible.</span><br></pre></td></tr></table></figure>
+<h2 id="Tasks"><a href="#Tasks" class="headerlink" title="Tasks"></a>Tasks</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> Attackers can abuse the vssadmin utility to create volume shadow snapshots and then extract sensitive files like NTDS.dit to bypass security mechanisms. Identify the time when the Volume Shadow Copy service entered a running state.</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> When a volume shadow snapshot is created, the Volume shadow copy service validates the privileges using the Machine account and enumerates User groups. Find the two user groups the volume shadow copy process queries and the machine account that did it.</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> Identify the Process ID (in Decimal) of the volume shadow copy service process.</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> Find the assigned Volume ID/GUID value to the Shadow copy snapshot when it was mounted.</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> Identify the full path of the dumped NTDS database on disk.</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> When was newly dumped ntds.dit created on disk?</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> A registry hive was also dumped alongside the NTDS database. Which registry hive was dumped and what is its file size in bytes?</span><br></pre></td></tr></table></figure>
+<h2 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h2><p>题目给了evtx文件和MFT文件，我们先来对这两个文件进行简要的解释</p>
+<h3 id="evtx"><a href="#evtx" class="headerlink" title="evtx"></a>evtx</h3><p><code>.evtx</code> 文件是 Windows 操作系统的 <strong>事件日志文件格式</strong>，它用于存储系统、应用程序、安全相关的事件日志。Windows NT 和 Windows 2000 之前的版本的文件格式为<code>.evt</code>。</p>
 <p>日志文件通常存储在下面的默认路径中</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Windows\System32\winevt\Logs\</span><br></pre></td></tr></table></figure>
 <p>常见的日志文件有</p>
 <ul>
-<li>
-<p><strong>Application.evtx</strong>：记录应用程序或系统程序运行方面的日志事件，比如数据库程序可以在应用程序日志中记录文件错误，应用的崩溃记录等。</p>
+<li><p><strong>Application.evtx</strong>：记录应用程序或系统程序运行方面的日志事件，比如数据库程序可以在应用程序日志中记录文件错误，应用的崩溃记录等。</p>
 </li>
-<li>
-<p><strong>System.evtx</strong>：记录操作系统自身组件产生的日志事件，比如驱动、系统组件和应用软件的崩溃以及数据丢失错误等等。</p>
+<li><p><strong>System.evtx</strong>：记录操作系统自身组件产生的日志事件，比如驱动、系统组件和应用软件的崩溃以及数据丢失错误等等。</p>
 </li>
-<li>
-<p><strong>Security.evtx</strong>：记录系统的安全审计日志事件，比如登录事件、对象访问、进程追踪、特权调用、帐号管理、策略变更等。这个日志在我们取证当中经常用到。</p>
+<li><p><strong>Security.evtx</strong>：记录系统的安全审计日志事件，比如登录事件、对象访问、进程追踪、特权调用、帐号管理、策略变更等。这个日志在我们取证当中经常用到。</p>
 </li>
-<li>
-<p><strong>Setup.evtx</strong>：记录安装相关事件。</p>
+<li><p><strong>Setup.evtx</strong>：记录安装相关事件。</p>
 </li>
 </ul>
 <p>接下来介绍一下常见的<code>Event ID</code></p>
-<h4 id="securityevtx"><a class="markdownIt-Anchor" href="#securityevtx"></a> Security.evtx</h4>
+<h4 id="Security-evtx"><a href="#Security-evtx" class="headerlink" title="Security.evtx"></a>Security.evtx</h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -242,7 +234,8 @@
 </tr>
 </tbody>
 </table>
-<h4 id="systemevtx"><a class="markdownIt-Anchor" href="#systemevtx"></a> System.evtx</h4>
+</div>
+<h4 id="System-evtx"><a href="#System-evtx" class="headerlink" title="System.evtx"></a>System.evtx</h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -269,7 +262,8 @@
 </tr>
 </tbody>
 </table>
-<h4 id="applicationevtx"><a class="markdownIt-Anchor" href="#applicationevtx"></a> Application.evtx</h4>
+</div>
+<h4 id="Application-evtx"><a href="#Application-evtx" class="headerlink" title="Application.evtx"></a>Application.evtx</h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -292,7 +286,8 @@
 </tr>
 </tbody>
 </table>
-<h4 id="microsoft-windows-taskscheduler"><a class="markdownIt-Anchor" href="#microsoft-windows-taskscheduler"></a> Microsoft-Windows-TaskScheduler</h4>
+</div>
+<h4 id="Microsoft-Windows-TaskScheduler"><a href="#Microsoft-Windows-TaskScheduler" class="headerlink" title="Microsoft-Windows-TaskScheduler"></a>Microsoft-Windows-TaskScheduler</h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -311,6 +306,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>依据<a target="_blank" rel="noopener" href="https://www.hackthebox.com/blog/ntds-dumping-attack-detection">NTDS dumping attack detection</a>这篇文章在这个挑战中我们将会用到下面的几个事件ID</p>
 <p>首先我们的事件源限定在ESENT中，其中的事件ID325和327分别在创建新数据库和分离数据库时记录这些事件。两者的描述分别如下</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The database engine created a new database....</span><br><span class="line"></span><br><span class="line">The database engine detached a database....</span><br></pre></td></tr></table></figure>
@@ -322,8 +318,7 @@
 <p>事件ID 4799当某个进程枚举（列出）计算机或设备上某个<strong>启用了安全功能的本地组</strong>的成员时，会生成此事件。或者说尝试获取某个本地组（如 <code>Administrators</code> 组）的成员信息时。</p>
 <p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4799?source=post_page-----2efb81522f2c--------------------------------">https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4799?source=post_page-----2efb81522f2c--------------------------------</a></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A security-enabled local group membership was enumerated.</span><br></pre></td></tr></table></figure>
-<h3 id="ntdsdit"><a class="markdownIt-Anchor" href="#ntdsdit"></a> NTDS.dit</h3>
-<p><strong>NTDS.dit</strong> 是 Windows 域控制器的核心数据库文件，存储了AD中的重要信息，存储了所有域控制器的目录服务数据，如用户账户、组信息和计算机对象。具体包括下面的内容：</p>
+<h3 id="NTDS-dit"><a href="#NTDS-dit" class="headerlink" title="NTDS.dit"></a>NTDS.dit</h3><p><strong>NTDS.dit</strong> 是 Windows 域控制器的核心数据库文件，存储了AD中的重要信息，存储了所有域控制器的目录服务数据，如用户账户、组信息和计算机对象。具体包括下面的内容：</p>
 <ul>
 <li>存储 Active Directory 对象：用户账户、计算机账户、组、组织单位 (OU) 等。</li>
 <li>存储身份验证凭据：包括用户的密码哈希 (如 NTLM、Kerberos 密钥等)。</li>
@@ -339,14 +334,13 @@
 <li><code>SAM</code>文件位置:<code>C:\Windows\System32\config\SAM</code></li>
 </ul>
 <p>注：<code>SYSTEM</code>文件和<code>HKEY_LOCAL_MACHINE\SYSTEM</code>注册表配置单元是同一个数据源，只是表现形式不一样</p>
-<h4 id="常见攻击方式"><a class="markdownIt-Anchor" href="#常见攻击方式"></a> 常见攻击方式</h4>
-<p>在Active Directory服务运行时<code>NTDS.dit</code>被锁定（不允许被复制），但仍然具有非常多的方式提取<code>NTDS.dit</code>文件，这里仅做简单介绍，以后有机会补充</p>
-<p><strong>Volume Shadow Copy Service (VSS)</strong></p>
+<h4 id="常见攻击方式"><a href="#常见攻击方式" class="headerlink" title="常见攻击方式"></a>常见攻击方式</h4><p>在Active Directory服务运行时<code>NTDS.dit</code>被锁定（不允许被复制），但仍然具有非常多的方式提取<code>NTDS.dit</code>文件，这里仅做简单介绍，以后有机会补充</p>
+<p> <strong>Volume Shadow Copy Service (VSS)</strong></p>
 <p>卷影副本技术绕过文件锁定机制进行提取</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vssadmin create shadow /<span class="keyword">for</span>=C:</span><br><span class="line"><span class="built_in">copy</span> \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\NTDS\ntds.dit .</span><br></pre></td></tr></table></figure>
 <p>对SYSTEM文件的提取也类似</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">copy</span> \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM C:\system.hiv</span><br><span class="line"><span class="built_in">copy</span> \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM C:\sam.hiv</span><br></pre></td></tr></table></figure>
-<p><strong>NTDSUTIL.exe</strong></p>
+<p> <strong>NTDSUTIL.exe</strong></p>
 <p><code>NTDSUTIL</code> 是一个用于管理和维护 Active Directory 域控制器的命令行工具，主要用于进行数据库操作、恢复、备份、清理活动目录等任务。</p>
 <p>关于此工具的详细操作可参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/suv789/p/18356208">https://www.cnblogs.com/suv789/p/18356208</a></p>
 <p>利用如下命令进行副本的复制</p>
@@ -358,8 +352,7 @@
 <p>更多的提取方式可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/Ping_Pig/article/details/108914583">https://blog.csdn.net/Ping_Pig/article/details/108914583</a></p>
 <p>在本地利用Impacket工具包的secretsdump.py进行密码提取</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 secretsdump.py -ntds ntds.dit -system system.hiv LOCAL</span><br></pre></td></tr></table></figure>
-<h3 id="mft"><a class="markdownIt-Anchor" href="#mft"></a> MFT</h3>
-<p>MFT（Master File Table，主文件表），用于存储文件和目录的元数据。每个 NTFS 卷都包含一个 $MFT，它是 NTFS 文件系统的关键部分。</p>
+<h3 id="MFT"><a href="#MFT" class="headerlink" title="MFT"></a>MFT</h3><p>MFT（Master File Table，主文件表），用于存储文件和目录的元数据。每个 NTFS 卷都包含一个 $MFT，它是 NTFS 文件系统的关键部分。</p>
 <p>MFT包含以下信息：</p>
 <ul>
 <li>文件和目录的属性：包括权限、所有者、创建时间、修改时间、访问时间等。</li>
@@ -375,40 +368,33 @@
 <li>文件数据驻留在 $MFT 中时，不会占用磁盘空间，可能被用于隐藏恶意文件。</li>
 </ul>
 </blockquote>
-<h3 id="task1"><a class="markdownIt-Anchor" href="#task1"></a> Task1</h3>
-<p>我们首先要确定卷影复制服务进入运行状态的时间，在<code>SYSTEM.evtx</code>中寻找事件ID为7036的事件，然后搜索<code>volumn shadow copy</code>服务</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124222908.png" alt="微信截图_20250124222908"></p>
+<h3 id="Task1"><a href="#Task1" class="headerlink" title="Task1"></a>Task1</h3><p>我们首先要确定卷影复制服务进入运行状态的时间，在<code>SYSTEM.evtx</code>中寻找事件ID为7036的事件，然后搜索<code>volumn shadow copy</code>服务</p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124222908.png" alt="微信截图_20250124222908"></p>
 <p>这里需要注意一下我们和HTB总部英国是存在8小时时差的，因此我们得到的结果需要减去8个小时才是我们的答案</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124223744.png" alt="微信截图_20250124223744"></p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124223744.png" alt="微信截图_20250124223744"></p>
 <p><strong>Answer：2024-05-14 03:42:16</strong></p>
-<h3 id="task2"><a class="markdownIt-Anchor" href="#task2"></a> Task2</h3>
-<p>找到卷影复制进程查询的两个用户组以及执行该操作的计算机帐户，在<code>Security.evtx</code>中筛选4799事件，并查找卷影服务进程<code>VSSVC.exe</code></p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124224912.png" alt="微信截图_20250124224912"></p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124224947.png" alt="微信截图_20250124224947"></p>
+<h3 id="Task2"><a href="#Task2" class="headerlink" title="Task2"></a>Task2</h3><p>找到卷影复制进程查询的两个用户组以及执行该操作的计算机帐户，在<code>Security.evtx</code>中筛选4799事件，并查找卷影服务进程<code>VSSVC.exe</code></p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124224912.png" alt="微信截图_20250124224912"></p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124224947.png" alt="微信截图_20250124224947"></p>
 <p>答案很明显</p>
 <p><strong>Answer：Administrators, Backup Operators, DC01$</strong></p>
-<h3 id="task3"><a class="markdownIt-Anchor" href="#task3"></a> Task3</h3>
-<p>卷影复制服务进程ID的10进制</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124225122.png" alt="微信截图_20250124225122"></p>
+<h3 id="Task3"><a href="#Task3" class="headerlink" title="Task3"></a>Task3</h3><p>卷影复制服务进程ID的10进制</p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124225122.png" alt="微信截图_20250124225122"></p>
 <p>Answer：4,496</p>
-<h3 id="task4"><a class="markdownIt-Anchor" href="#task4"></a> Task4</h3>
-<p>提取卷影副本时分配的卷 ID/GUID 值，在<code>Microsoft-Windows-NTFS.evtx</code>中过滤事件ID 4，这标志着NTFS 卷已成功挂载，找到ShadowCopy即可</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124230156.png" alt="微信截图_20250124230156"></p>
+<h3 id="Task4"><a href="#Task4" class="headerlink" title="Task4"></a>Task4</h3><p>提取卷影副本时分配的卷 ID/GUID 值，在<code>Microsoft-Windows-NTFS.evtx</code>中过滤事件ID 4，这标志着NTFS 卷已成功挂载，找到ShadowCopy即可</p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124230156.png" alt="微信截图_20250124230156"></p>
 <p><strong>Answer：{06c4a997-cca8-11ed-a90f-000c295644f9}</strong></p>
-<h3 id="task5"><a class="markdownIt-Anchor" href="#task5"></a> Task5</h3>
-<p>转储的 NTDS 数据库的完整路径，利用Eric Zimmerman个人网站中的MFT Explorer打开MFT文件</p>
+<h3 id="Task5"><a href="#Task5" class="headerlink" title="Task5"></a>Task5</h3><p>转储的 NTDS 数据库的完整路径，利用Eric Zimmerman个人网站中的MFT Explorer打开MFT文件</p>
 <p>或者使用MFTECmd</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MFTECmd.exe <span class="operator">-f</span> <span class="string">&quot;&lt;Path-to-<span class="variable">$MFT</span>&gt;&quot;</span> <span class="literal">--csv</span> <span class="string">&quot;&lt;Path-to-Output.csv&gt;&quot;</span></span><br></pre></td></tr></table></figure>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124232308.png" alt="微信截图_20250124232308"></p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124232308.png" alt="微信截图_20250124232308"></p>
 <p><strong>Answer：C:\Users\Administrator\Documents\backup_sync_Dc\Ntds.dit</strong></p>
-<h3 id="task6"><a class="markdownIt-Anchor" href="#task6"></a> Task6</h3>
-<p>新转储的 ntds.dit 是什么时候在磁盘上创建的，在我们上面的页面的右下角</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124232458.png" alt="微信截图_20250124232458"></p>
+<h3 id="Task6"><a href="#Task6" class="headerlink" title="Task6"></a>Task6</h3><p>新转储的 ntds.dit 是什么时候在磁盘上创建的，在我们上面的页面的右下角</p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124232458.png" alt="微信截图_20250124232458"></p>
 <p><strong>Answer：2024-05-14 03:44:22</strong></p>
-<h3 id="task7"><a class="markdownIt-Anchor" href="#task7"></a> Task7</h3>
-<p>转储了哪个注册表配置单元以及其文件大小（以字节为单位）是多少</p>
+<h3 id="Task7"><a href="#Task7" class="headerlink" title="Task7"></a>Task7</h3><p>转储了哪个注册表配置单元以及其文件大小（以字节为单位）是多少</p>
 <p>这个就是我们上面说的<code>SYSTEM.hive</code>了</p>
-<p><img src="/2025/01/22/HTB-CrownJewel-1/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250124232800.png" alt="微信截图_20250124232800"></p>
+<p><img src="/2025/01/22/HTB-CrownJewel-1/微信截图_20250124232800.png" alt="微信截图_20250124232800"></p>
 <p><strong>Answer：SYSTEM, 17563648</strong></p>
 
     </div>
@@ -545,7 +531,6 @@
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="//cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

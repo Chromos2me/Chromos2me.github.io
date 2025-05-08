@@ -161,35 +161,32 @@
 
     <div class="content">
         <p><img src="/2025/04/23/HTB-CrownJewel-2/1_xtO4dkLG1iUMOZOz7-nvTQ.webp" alt="1_xtO4dkLG1iUMOZOz7-nvTQ"></p>
-<h2 id="场景"><a class="markdownIt-Anchor" href="#场景"></a> 场景</h2>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forela 的域环境一片混乱。刚刚从域控制器收到另一个警报，提示 NTDS.dit 数据库被外泄。就在前一天，你刚响应了一个来自同一域控制器的警报，攻击者通过 vssadmin 工具转储了 NTDS.dit。然而，你成功删除了转储的文件，将攻击者踢出了域控制器，并恢复了一个干净的快照。现在，他们再次使用域管理员账户访问域控制器，凭借在环境中的持久化访问，这次他们正在滥用 ntdsutil 工具转储数据库。在这些混乱的时刻，帮帮 Forela 吧！</span><br></pre></td></tr></table></figure>
-<h2 id="问题"><a class="markdownIt-Anchor" href="#问题"></a> 问题</h2>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> 在使用 ntdsutil.exe 将 NTDS 转储到磁盘时，它会同时调用 Microsoft 的卷影复制服务。该服务最近一次进入运行状态的时间戳是多少，即可能标志着 NTDS 转储过程启动的时刻？</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> 确认已转储的 NTDS 文件的完整路径。</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> 数据库转储是在何时被创建到磁盘上的？</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> 新转储的数据库在何时被视为已完成并可供使用？</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> 事件日志使用事件源来追踪来自不同来源的事件。哪个事件源提供诸如数据库创建和卸载等状态数据？</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> 当使用 ntdsutil.exe 转储数据库时，它会枚举某些用户组来验证所用帐户的权限。ntdsutil.exe 进程会枚举哪两个组？请按字母顺序列出这些组，并用逗号分隔。</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> 现在，您的任务是查找恶意会话的登录时间。使用登录 ID，查找用户登录会话开始的时间。</span><br></pre></td></tr></table></figure>
-<h2 id="分析解答"><a class="markdownIt-Anchor" href="#分析解答"></a> 分析解答</h2>
-<p>对于问题1，我们在CrownJewel-1中说到了事件ID 7036由<strong>SYSTEM.evtx</strong>日志生成，<strong>记录服务的启动或停止状态发生了变化</strong>，我们仅需在<strong>SYSTEM.evtx</strong>中过滤事件ID 7036</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250423221750.png" alt="微信截图_20250423221750"></p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forela 的域环境一片混乱。刚刚从域控制器收到另一个警报，提示 NTDS.dit 数据库被外泄。就在前一天，你刚响应了一个来自同一域控制器的警报，攻击者通过 vssadmin 工具转储了 NTDS.dit。然而，你成功删除了转储的文件，将攻击者踢出了域控制器，并恢复了一个干净的快照。现在，他们再次使用域管理员账户访问域控制器，凭借在环境中的持久化访问，这次他们正在滥用 ntdsutil 工具转储数据库。在这些混乱的时刻，帮帮 Forela 吧！</span><br></pre></td></tr></table></figure>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> 在使用 ntdsutil.exe 将 NTDS 转储到磁盘时，它会同时调用 Microsoft 的卷影复制服务。该服务最近一次进入运行状态的时间戳是多少，即可能标志着 NTDS 转储过程启动的时刻？</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> 确认已转储的 NTDS 文件的完整路径。</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> 数据库转储是在何时被创建到磁盘上的？</span><br><span class="line"></span><br><span class="line"><span class="bullet">4.</span> 新转储的数据库在何时被视为已完成并可供使用？</span><br><span class="line"></span><br><span class="line"><span class="bullet">5.</span> 事件日志使用事件源来追踪来自不同来源的事件。哪个事件源提供诸如数据库创建和卸载等状态数据？</span><br><span class="line"></span><br><span class="line"><span class="bullet">6.</span> 当使用 ntdsutil.exe 转储数据库时，它会枚举某些用户组来验证所用帐户的权限。ntdsutil.exe 进程会枚举哪两个组？请按字母顺序列出这些组，并用逗号分隔。</span><br><span class="line"></span><br><span class="line"><span class="bullet">7.</span> 现在，您的任务是查找恶意会话的登录时间。使用登录 ID，查找用户登录会话开始的时间。</span><br></pre></td></tr></table></figure>
+<h2 id="分析解答"><a href="#分析解答" class="headerlink" title="分析解答"></a>分析解答</h2><p>对于问题1，我们在CrownJewel-1中说到了事件ID 7036由<strong>SYSTEM.evtx</strong>日志生成，<strong>记录服务的启动或停止状态发生了变化</strong>，我们仅需在<strong>SYSTEM.evtx</strong>中过滤事件ID 7036</p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250423221750.png" alt="微信截图_20250423221750"></p>
 <p>然后查找包含<strong>Volume Shadow Copy</strong>服务的日志条目即可</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250423221927.png" alt="微信截图_20250423221927"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250423221927.png" alt="微信截图_20250423221927"></p>
 <p>没有几条日志，我们就找第一条服务进入运行状态的条目即可，在<strong>TimeCreated SystemTime</strong>条目中找到时间戳</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250423222316.png" alt="微信截图_20250423222316"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250423222316.png" alt="微信截图_20250423222316"></p>
 <p>因此答案为<strong>2024-05-15 05:39:55</strong></p>
 <p>事件ID 325在创建新数据库时被记录在<strong>APPLICATION.evtx</strong>中，过滤出来，并寻找和上面ntdsutil.exe将NTDS转储到磁盘上的时间相符的事件</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250423223522.png" alt="微信截图_20250423223522"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250423223522.png" alt="微信截图_20250423223522"></p>
 <p>答案为<strong>C:\Windows\Temp\dump_tmp\Active Directory\ntds.dit</strong></p>
 <p>数据库创建时间也非常好寻找，将上面的事件转换为XML视图，在TimeCreated SystemTime中即可获得</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250423223836.png" alt="微信截图_20250423223836"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250423223836.png" alt="微信截图_20250423223836"></p>
 <p>答案为<strong>2024-05-15 05:39:56</strong></p>
 <p>当数据库引擎分离了转储的NTDS.dit数据库副本时，表明此数据库已经可被使用，此时会触发327事件表示分离数据库的操作</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424143439.png" alt="微信截图_20250424143439"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424143439.png" alt="微信截图_20250424143439"></p>
 <p>根据事件发生的时间可以推测两次的数据库分离都是发生在攻击事件的过程中，获取事件发生的时间时需要注意一下事件查看器面板中关于事件的常规信息<strong>显示的时间戳是根据计算机配置的时区显示的</strong>，要获取原始的UTC时间需要在详细信息的友好视图或者XML视图中获取</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424144132.png" alt="微信截图_20250424144132"></p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424144152.png" alt="微信截图_20250424144152"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424144132.png" alt="微信截图_20250424144132"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424144152.png" alt="微信截图_20250424144152"></p>
 <p>答案为<strong>2024-05-15 05:39:58</strong></p>
 <p>关于使用的事件源我们在CrownJewel-1中提到了</p>
 <blockquote>
-<p><strong>事件源ESENT</strong>是 Windows 事件日志中与**Extensible Storage Engine (ESE)**相关的事件源。ESE 是 Microsoft 的高性能、事务型数据库引擎，被许多 Windows 组件和应用程序用来管理数据存储和访问。我们的Active Directory服务用它来存储目录信息，例如用户、组和计算机对象。</p>
+<p><strong>事件源ESENT</strong>是 Windows 事件日志中与<strong>Extensible Storage Engine (ESE)</strong>相关的事件源。ESE 是 Microsoft 的高性能、事务型数据库引擎，被许多 Windows 组件和应用程序用来管理数据存储和访问。我们的Active Directory服务用它来存储目录信息，例如用户、组和计算机对象。</p>
 </blockquote>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424144918.png" alt="微信截图_20250424144918"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424144918.png" alt="微信截图_20250424144918"></p>
 <p>答案为<strong>ESENT</strong></p>
 <p>使用ntdsutil.exe转储数据库时，它会枚举某些用户组来验证所用帐户的权限，这两个组分别为 <code>Administrators</code>和<code>Backup Operators</code></p>
 <blockquote>
@@ -197,17 +194,16 @@
 <p>这是具有 <strong>备份权限</strong> 的操作员组，成员可以备份和还原文件（包括即使他们没有显式访问权限的对象），这是转储数据库所必须的权限之一。该组权限较少，不拥有完全的管理权限，但具备访问如 <code>ntds.dit</code>、<code>SYSVOL</code>、<code>registry</code> 等敏感资源的能力。</p>
 </blockquote>
 <p>我们在CrownJewel-1中说到了当某个进程枚举（列出）计算机或设备上某个启用了安全功能的本地组的成员时，会生成4799事件。 我们在<strong>Security.evtx</strong>中筛选一下，并查找与<code>ntdsutil</code>进程有关的事件，我们可以发现这类事件非常的多，从中可以发现<code>ntdsutil</code>枚举的用户组</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424145844.png" alt="微信截图_20250424145844"></p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424145910.png" alt="微信截图_20250424145910"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424145844.png" alt="微信截图_20250424145844"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424145910.png" alt="微信截图_20250424145910"></p>
 <p>登录ID也在其中为<strong>0x8DE3D</strong></p>
 <p>答案为<strong>Administrators, Backup Operators</strong></p>
 <p>查找恶意会话的登录时间我们需要用到几个事件ID</p>
-<p><strong>事件ID 4768</strong></p>
+<p><strong>事件ID 4768</strong> </p>
 <ul>
 <li>此事件表示某个用户请求了 Kerberos TGT（Ticket Granting Ticket），即首次登录 AD 域时的身份验证过程。</li>
 <li>常见用途有：标志某个用户尝试登录域，检测登录尝试、密码猜测行为（频繁失败的4768），以及横向移动</li>
-<li>关键字段有
-<ul>
+<li>关键字段有<ul>
 <li><strong>Account Name</strong>：请求票据的用户。</li>
 <li><strong>Client Address</strong>：发起请求的IP地址。</li>
 <li><strong>Result Code</strong>：认证结果（如 0x0 表示成功，0x6 表示用户名无效，0x18 表示密码错误）。</li>
@@ -218,8 +214,7 @@
 <ul>
 <li>当用户已经拥有 TGT 后，请求访问具体服务时，系统会请求TGS，此时记录该事件。</li>
 <li>常见用途：检测用户访问了哪些服务，可以帮助分析横向移动（例如使用有效凭据访问其他主机上的服务）</li>
-<li>关键字段：
-<ul>
+<li>关键字段：<ul>
 <li><strong>Service Name</strong>：目标服务（如 CIFS、HOST 等）。</li>
 <li><strong>Client Address</strong>：发起访问的IP地址。</li>
 <li><strong>Ticket Encryption Type</strong>：可以用于发现弱加密算法（如 RC4）。</li>
@@ -229,25 +224,26 @@
 <p><strong>事件 ID 5379</strong></p>
 <ul>
 <li>该事件表示访问了加密密钥材料，如：凭据保护、DPAPI、Credman(Credential Manager) 凭据或密钥保护等。</li>
-<li>常见用途为：
-<ul>
+<li>常见用途为：<ul>
 <li>检测敏感信息访问，如查看某用户的 Windows 凭据、密钥或使用 Windows Hello、虚拟智能卡。</li>
 <li>可用于发现恶意软件访问用户凭据的行为。</li>
 </ul>
 </li>
-<li>关键字段：</li>
+<li>关键字段：<ul>
 <li><strong>Caller Process Name</strong>：访问密钥的进程。</li>
 <li><strong>Subject User Name</strong>：发起访问的用户。</li>
 <li><strong>Key Type</strong>：访问的是哪种密钥，比如 <code>User DPAPI</code>, <code>Virtual Smart Card</code>, <code>Windows Hello</code>, <code>Generic Credentials</code>。</li>
 </ul>
+</li>
+</ul>
 <p>在Security.evtx中筛选4768，4769事件</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424151901.png" alt="微信截图_20250424151901"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424151901.png" alt="微信截图_20250424151901"></p>
 <p>我们在其中发现一个利用Administrator账户进行TGT请求的4768事件，可以发现其下紧跟着一条4769事件</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424152406.png" alt="微信截图_20250424152406"></p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424152443.png" alt="微信截图_20250424152443"></p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424152509.png" alt="微信截图_20250424152509"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424152406.png" alt="微信截图_20250424152406"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424152443.png" alt="微信截图_20250424152443"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424152509.png" alt="微信截图_20250424152509"></p>
 <p>我们接着加入事件ID 5379，此事件中包含我们在上面找到的登录ID<strong>0x8DE3D</strong>，找到最早的一条枚举凭据事件的时间即为我们的答案</p>
-<p><img src="/2025/04/23/HTB-CrownJewel-2/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20250424152903.png" alt="微信截图_20250424152903"></p>
+<p><img src="/2025/04/23/HTB-CrownJewel-2/微信截图_20250424152903.png" alt="微信截图_20250424152903"></p>
 <p>答案为<strong>2024-05-15 05:36:31</strong></p>
 
     </div>
@@ -384,7 +380,6 @@
             all[i].SourceElement().parentNode.className += ' has-jax';
     });
 </script>
-<script src="//cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>
